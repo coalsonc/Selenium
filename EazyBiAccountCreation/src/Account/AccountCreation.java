@@ -37,26 +37,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class AccountCreation {
 	
 	//store the starting URL and the WebDriver used over and over
-	public String baseUrl;
-	public WebDriver driver;
+	public static String baseUrl;
+	public static WebDriver driver;
 	
 	//whatever this is or should we even do this?
-	private String credentialsFilePath = "";
+	private static String credentialsFilePath = "";
 	
 	//whatever this is or should we even do this?
-	private String projectDataFilePath = "";
-	
-	//required project data
-	private String accountName;
-	private String nameOfJiraProject;
-	private String projectKey;
-	private String accountDescription;
-	private String projectType;
-	
-	//main method is required
-	public static void main(String[] args) throws Exception{
-		JUnitCore.main("AccountCreation.class");
-	}
+	private static String projectDataFilePath = "";
 	
 	//directing towards where Chrome driver is installed on my local machine
 	//setup and teardown aren't written to test standards, so these need to be explicitly called
@@ -67,12 +55,21 @@ public class AccountCreation {
 	//       (4) description of account
 	//       (5) project type
 	// read from file? read from somewhere?
+		
+	//required project data
+	private static String accountName;
+	private static String nameOfJiraProject;
+	private static String projectKey;
+	private static String accountDescription;
+	private static String projectType;
 	
-	
-	//do the thing
-	@Test
-	public void StartAccountCreation() {
+	//main method is required
+	//this is more like a task
+	//not put into a testcase
+	public static void main(String[] args) throws Exception{
+
 		//yeah, reading these from the keyboard is a temporary solution, calm down
+		Setup();
 		System.out.println("Getting data paths for credentials and project data...");
 		GetPathsFromUser();
 		
@@ -208,9 +205,11 @@ public class AccountCreation {
 			e.printStackTrace();
 			TakeScreenshot("Exception.jpg");
 		}
-		
+
 	}
-	public void Setup() {
+	
+	//set the driver browser so that we can watch the process
+	public static void Setup() {
 		System.setProperty("webdriver.chrome.driver","C:/chromedriver_win32/chromedriver.exe");
 		driver = new ChromeDriver(); 
 		
@@ -224,7 +223,7 @@ public class AccountCreation {
 	//without changing all the commands/methods
 	//no having to have Chrome or some browser in some place
 	
-	public void SetupHeadless() {
+	public static void SetupHeadless() {
 		driver = new HtmlUnitDriver();
 		baseUrl = "LOL";
 		
@@ -233,12 +232,12 @@ public class AccountCreation {
 	}
 	
 	//quit when finished
-	public void Teardown() {
+	public static void Teardown() {
 		driver.quit();
 	}
 	
 	//maybe?
-	public boolean Login(String credentialFilePath) {
+	public static boolean Login(String credentialFilePath) {
 		List<String> credentials = ReadFromFile(credentialFilePath);
 		//click, type user-name and password, etc
 		//take a screenshot of this if not successful
@@ -254,7 +253,7 @@ public class AccountCreation {
 
 	//so you want to take a screenshot, huh?
 	//well tell me the filePath with the name and type for the file
-	public void TakeScreenshot(String filePath) {
+	public static void TakeScreenshot(String filePath) {
 		//screenshot code should be something like below for reuse
 		File pic = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		try {
@@ -267,7 +266,7 @@ public class AccountCreation {
 	
 	//read the project data from a file and set the class fields above for
 	//reuse through this process
-	public boolean CollectProjectData(String projectDataFilePath) {
+	public static boolean CollectProjectData(String projectDataFilePath) {
 		//return in order read from file?
 		List<String> projectData = ReadFromFile(projectDataFilePath);
 		
@@ -292,7 +291,7 @@ public class AccountCreation {
 	
 	//Check a check box if not already checked
 	//Assumes we are finding the box by id
-	public void CheckBoxById(String id) {
+	public static void CheckBoxById(String id) {
 		WebElement element = FindElementById(id);
 		if(!CheckOrUncheckedBox(element)) {
 			//if not, check box
@@ -302,7 +301,7 @@ public class AccountCreation {
 	
 	//undo a box if not already unchecked
 	//Assumes we are finding the box by id
-	public void UncheckBoxById(String id) {
+	public static void UncheckBoxById(String id) {
 		WebElement element = FindElementById(id);
 		if(CheckOrUncheckedBox(element)) {
 			//if checked, undo this box
@@ -311,7 +310,7 @@ public class AccountCreation {
 	}
 	
 	//might be needed to get something from URL for processing
-	public String GetIdFromUrl() {
+	public static String GetIdFromUrl() {
 		
 		WaitForPageToLoad();
 		String url = driver.getCurrentUrl();
@@ -323,13 +322,13 @@ public class AccountCreation {
 	}
 	
 	//if checked, return true, else false
-	public boolean CheckOrUncheckedBox(WebElement box) {
+	public static boolean CheckOrUncheckedBox(WebElement box) {
 		return box.isSelected();
 	}
 	
 	//this method can be used to find any kind of WebElement on the page
 	//assuming we know the id
-	public WebElement FindElementById(String id) {
+	public static WebElement FindElementById(String id) {
 		WebElement element = null;
 		
 		WebDriverWait wait = new WebDriverWait(driver, 100);
@@ -339,7 +338,7 @@ public class AccountCreation {
 	}
 	
 	//find the element by the displayed text of the link
-	public WebElement FindElementByLinkText(String text) {
+	public static WebElement FindElementByLinkText(String text) {
 		WebElement element = null;
 		
 		WebDriverWait wait = new WebDriverWait(driver, 100);
@@ -350,7 +349,7 @@ public class AccountCreation {
 	
 	//might be unnecessary, but let's be safe when grabbing currentUrl()
 	//thanks --> https://stackoverflow.com/questions/15122864/selenium-wait-until-document-is-ready
-	public void WaitForPageToLoad() {
+	public static void WaitForPageToLoad() {
 		new WebDriverWait(driver, 30).until((ExpectedCondition<Boolean>) wd ->
         ((JavascriptExecutor) wd).executeScript("return document.readyState").equals("complete"));
 	}
@@ -358,7 +357,7 @@ public class AccountCreation {
 	//this method can be used to find any kind of WebElement on the page
 	//assuming we know the class
 	//IMPORTANT --> singular class names only
-	public WebElement FindElementByClass(String className) {
+	public static WebElement FindElementByClass(String className) {
 		WebElement element = null;
 		
 		WebDriverWait wait = new WebDriverWait(driver, 100);
@@ -370,7 +369,7 @@ public class AccountCreation {
 	//so this method is going to attempt to form the CSS selector for the caller
 	//mostly intended for WebElements with multiple classes
 	//hopefully this works
-	public WebElement FindElementByMultipleClasses(String htmlTag, String classes) {
+	public static WebElement FindElementByMultipleClasses(String htmlTag, String classes) {
 		
 		WebElement element = null;
 		//so this assumes that the classes are already separated by spaces only
@@ -384,7 +383,7 @@ public class AccountCreation {
 	
 	//this method is going to attempt to form the cssSelector for the caller
 	//works? 
-	public WebElement FindElementByCssSelector(String htmlTag, String attribute, String value) {
+	public static WebElement FindElementByCssSelector(String htmlTag, String attribute, String value) {
 		WebElement element = null;
 		
 		String cssSelector = htmlTag + "[" + attribute + "='" + value + "']";
@@ -396,7 +395,7 @@ public class AccountCreation {
 	
 	//this might not be the end way to do this, but for now, it's probably okay
 	//in the future, this will be passed in another way or gleaned in some way
-	public void GetPathsFromUser() {
+	public static void GetPathsFromUser() {
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("\nEnter file path for credentials file: ");
@@ -421,7 +420,7 @@ public class AccountCreation {
 	//thank you - https://www.caveofprogramming.com/java/java-file-reading-and-writing-files-in-java.html
 	//also this might be a csv, can change logic a bit assuming the first row is a data id row
 	//like Account Name, blah blah, skip that line, throw in a continue for i = 0
-	public List<String> ReadFromFile(String filePath) {
+	public static List<String> ReadFromFile(String filePath) {
 		
 		List<String> data = new ArrayList<String>();
 		
