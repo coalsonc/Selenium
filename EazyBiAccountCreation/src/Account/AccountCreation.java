@@ -193,44 +193,33 @@ public class AccountCreation {
 			
 			//select checkbox with text [Project name][Project key]
 			//id of check box is: source_application_source_selection_ids_[Project Key]
-			WebElement sourceAppBox = FindElementById("source_application_source_selection_ids_"+ projectKey);
-			//is this already checked?
-			if(!CheckOrUncheckedBox(sourceAppBox)) {
-				//if not, check box
-				sourceAppBox.click();
-			}
+			CheckBoxById("source_application_source_selection_ids_"+ projectKey);
 			
 			//uncheck element with id: "source_application_import_sample_reports"
-			WebElement sampleReports = FindElementById("source_application_import_sample_reports");
-			
-			if(CheckOrUncheckedBox(sampleReports)) {
-				//uncheck that b
-				sampleReports.click();
-			}
+			UncheckBoxById("source_application_import_sample_reports");
 			
 			//check id="source_application_extra_options_import_status_transitions" name="source_application[extra_options][import_status_transitions]"
-			CheckBox("source_application_extra_options_import_status_transitions");
-			
+			CheckBoxById("source_application_extra_options_import_status_transitions");
 			
 			//check id="source_application_extra_options_import_remaining_estimated_hours_change" name="source_application[extra_options][import_remaining_estimated_hours_change]"
-			CheckBox("source_application_extra_options_import_remaining_estimated_hours_change");
+			CheckBoxById("source_application_extra_options_import_remaining_estimated_hours_change");
 			
 			//check id="source_application_extra_options_import_interval_dimensions" name="source_application[extra_options][import_interval_dimensions]"
-			CheckBox("source_application_extra_options_import_interval_dimensions");
+			CheckBoxById("source_application_extra_options_import_interval_dimensions");
 
 			//check id="source_application_extra_options_user_group_dimensions_reporter_group" id="source_application_extra_options_user_group_dimensions_reporter_group"
 			//check id="source_application_extra_options_user_group_dimensions_reporter_group" name="source_application[extra_options][user_group_dimensions][]"
 			//are these two duplicates?
-			CheckBox("source_application_extra_options_user_group_dimensions_reporter_group");
+			CheckBoxById("source_application_extra_options_user_group_dimensions_reporter_group");
 			
 			//check id="source_application_extra_options_user_group_dimensions_assignee_group" name="source_application[extra_options][user_group_dimensions][]"
-			CheckBox("source_application_extra_options_user_group_dimensions_assignee_group");
+			CheckBoxById("source_application_extra_options_user_group_dimensions_assignee_group");
 		
 			//check id="source_application_extra_options_user_group_dimensions_logged_by_group" name="source_application[extra_options][user_group_dimensions][]"
-			CheckBox("source_application_extra_options_user_group_dimensions_logged_by_group");
+			CheckBoxById("source_application_extra_options_user_group_dimensions_logged_by_group");
 		
 			//check id="source_application_extra_options_user_group_dimensions_transition_author_group" name="source_application[extra_options][user_group_dimensions][]"
-			CheckBox("source_application_extra_options_user_group_dimensions_transition_author_group");
+			CheckBoxById("source_application_extra_options_user_group_dimensions_transition_author_group");
 			
 			//click Show available custom fields
 			//is this unique enough to find the right thing?
@@ -248,11 +237,22 @@ public class AccountCreation {
 		}
 	}
 	
-	//realized I was repeating the same 4 lines of code over and over
-	public void CheckBox(String id) {
+	//Check a check box if not already checked
+	//Assumes we are finding the box by id
+	public void CheckBoxById(String id) {
 		WebElement element = FindElementById(id);
 		if(!CheckOrUncheckedBox(element)) {
 			//if not, check box
+			element.click();
+		}
+	}
+	
+	//Uncheck a box if not already unchecked
+	//Assumes we are finding the box by id
+	public void UncheckBoxById(String id) {
+		WebElement element = FindElementById(id);
+		if(CheckOrUncheckedBox(element)) {
+			//if checked, uncheck this box
 			element.click();
 		}
 	}
