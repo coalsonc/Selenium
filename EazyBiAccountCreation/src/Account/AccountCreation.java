@@ -75,7 +75,7 @@ public class AccountCreation {
 	
 	//hopefully this will work to switch over to headless
 	//without changing all the commands/methods
-	//no having to have chrome or some browser in some place
+	//no having to have Chrome or some browser in some place
 	
 	public void SetupHeadless() {
 		driver = new HtmlUnitDriver();
@@ -93,7 +93,7 @@ public class AccountCreation {
 	//maybe?
 	public boolean Login(String credentialFilePath) {
 		List<String> credentials = ReadFromFile(credentialFilePath);
-		//click, type username and password, etc
+		//click, type user-name and password, etc
 		//take a screenshot of this if not successful
 		//return whether it was successful or not
 		
@@ -102,7 +102,7 @@ public class AccountCreation {
 		return true;
 	}
 
-	//so you want to take a screenshot, eh?
+	//so you want to take a screenshot, huh?
 	//well tell me the filePath with the name and type for the file
 	
 	public void TakeScreenshot(String filePath) {
@@ -122,7 +122,7 @@ public class AccountCreation {
 		//return in order read from file?
 		List<String> projectData = ReadFromFile(projectDataFilePath);
 		
-		//yeah, I realize this is kinda rough on the ordering
+		//yeah, I realize this is kind of rough on the ordering
 		//maybe there's a better way to do this?
 		try {
 			accountName = projectData.toArray()[0].toString();
@@ -162,26 +162,19 @@ public class AccountCreation {
 			descriptionField.sendKeys(accountDescription);
 			
 			//click submit
-			//need more info, more than attribute name = commit, need to know what kind of html tag it is in
+			//need more info, more than attribute name = commit, need to know what kind of HTML tag it is in
 			//maybe an enter event is good enough?
 			
-			//after page reload, grab the url from this page, parse the id out of it, store it
+			//after page reload, grab the URL from this page, parse the id out of it, store it
 			String id = GetIdFromUrl();
 			
 			//click Add new source application
-			//"/jira/plugins/servlet/eazybi/accounts/42/source_applications/new"
-			//hopefully that finds the right thing?
-			//may have to do a little extra if it returns the wrong link
-			//if this is on the same page as clicking submit/create, this is not unique
-			//may find it if it is the first link with these two classes though?
-			
-			//WebElement newSourceUrl = FindElementByMultipleClasses("a", "aui-button aui-button-primary");
 			WebElement newSourceUrl = FindElementByLinkText("Add new source application");
 			newSourceUrl.click();
 			WaitForPageToLoad();
 			
 			//click the image with Jira in it
-			//hopefully that can find it, is that space gonna cause a problem?
+			//hopefully that can find it, is that space going to cause a problem?
 			WebElement jiraImg = FindElementByCssSelector("img", "alt", "jira_local application");
 			jiraImg.click();
 			WaitForPageToLoad();
@@ -228,7 +221,7 @@ public class AccountCreation {
 			WaitForPageToLoad();
 			customFields.click();
 			
-			//click 88 stuffs in checkboxes 
+			//click 88 stuffs in check-boxes 
 			//Die();
 		}
 		else {
@@ -247,17 +240,17 @@ public class AccountCreation {
 		}
 	}
 	
-	//Uncheck a box if not already unchecked
+	//undo a box if not already unchecked
 	//Assumes we are finding the box by id
 	public void UncheckBoxById(String id) {
 		WebElement element = FindElementById(id);
 		if(CheckOrUncheckedBox(element)) {
-			//if checked, uncheck this box
+			//if checked, undo this box
 			element.click();
 		}
 	}
 	
-	//might be needed to get something from url for processing
+	//might be needed to get something from URL for processing
 	public String GetIdFromUrl() {
 		
 		WaitForPageToLoad();
@@ -302,7 +295,7 @@ public class AccountCreation {
         ((JavascriptExecutor) wd).executeScript("return document.readyState").equals("complete"));
 	}
 	
-	//this method can be used to find any kind of webelement on the page
+	//this method can be used to find any kind of WebElement on the page
 	//assuming we know the class
 	//IMPORTANT --> singular class names only
 	public WebElement FindElementByClass(String className) {
@@ -314,13 +307,13 @@ public class AccountCreation {
 		return element;
 	}
 	
-	//hmm, so this method is going to attempt to form the css selector for the caller
+	//so this method is going to attempt to form the CSS selector for the caller
 	//mostly intended for WebElements with multiple classes
 	//hopefully this works
 	public WebElement FindElementByMultipleClasses(String htmlTag, String classes) {
 		
 		WebElement element = null;
-		//so this assumes that the classes are already seperated by spaces only
+		//so this assumes that the classes are already separated by spaces only
 		String cssSelector = htmlTag + "[class='" + classes + "']";
 		
 		WebDriverWait wait = new WebDriverWait(driver, 100);
@@ -330,7 +323,7 @@ public class AccountCreation {
 	}
 	
 	//this method is going to attempt to form the cssSelector for the caller
-	//works? idk
+	//works? 
 	public WebElement FindElementByCssSelector(String htmlTag, String attribute, String value) {
 		WebElement element = null;
 		
@@ -387,7 +380,7 @@ public class AccountCreation {
 	            while((line = bufferedReader.readLine()) != null) {
 	                System.out.println(line);
 	                
-	                //assuming it will be like username: user, etc
+	                //assuming it will be like user name: user, etc
 	                //hopefully no one ends their password with a space...
 	                //or project names, etc
 	                data.add(line.split(delim)[1].trim());
