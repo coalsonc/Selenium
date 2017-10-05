@@ -12,15 +12,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotSelectableException;
+import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -97,8 +102,11 @@ public class AccountCreation {
 		//take a screenshot of this if not successful
 		//return whether it was successful or not
 		
-		
+		//login logic
+		//enter values
 		TakeScreenshot("login.jpg");
+		
+		//click button
 		return true;
 	}
 
@@ -144,91 +152,142 @@ public class AccountCreation {
 	@Test
 	public void StartAccountCreation() {
 		//yeah, reading these from the keyboard is a temporary solution, calm down
+		System.out.println("Getting data paths for credentials and project data...");
 		GetPathsFromUser();
 		
+		System.out.println("Logging in to EazyBi...");
 		boolean loggedIn = Login(credentialsFilePath);
+		
+		System.out.println("Getting account and project data...");
 		boolean dataCollected = CollectProjectData(projectDataFilePath);
 		
-		if(loggedIn && dataCollected) {
-			//start
+		try {
+			if(loggedIn && dataCollected) {
+				//start
+				
+				//enter account name
+				System.out.println("Entering account name...");
+				WebElement accountField = FindElementById("account_name");
+				accountField.sendKeys(accountName);
+				
+				//enter account description
+				System.out.println("Entering description...");
+				WebElement descriptionField = FindElementById("account_description");
+				descriptionField.sendKeys(accountDescription);
+				
+				//click submit
+				System.out.println("Clicking submit...");
+				//need more info, more than attribute name = commit, need to know what kind of HTML tag it is in
+				//maybe an enter event is good enough?
+				
+				//after page reload, grab the URL from this page, parse the id out of it, store it
+				String id = GetIdFromUrl();
+				System.out.println("Extracting id from page URL...");
+				
+				//click Add new source application
+				WebElement newSourceUrl = FindElementByLinkText("Add new source application");
+				newSourceUrl.click();
+				System.out.println("Clicking 'Add new source application'...");
+				WaitForPageToLoad();
+				
+				//click the image with Jira in it
+				//hopefully that can find it, is that space going to cause a problem?
+				WebElement jiraImg = FindElementByCssSelector("img", "alt", "jira_local application");
+				jiraImg.click();
+				System.out.println("Clicking 'Jira'...");
+				WaitForPageToLoad();
+				
+				//click submit/create
+				//chose this way bc it seems unique to this element
+				WebElement submitButton = FindElementByCssSelector("input", "data-disable-with", "Creating...");
+				submitButton.click();
+				System.out.println("Clicking 'Submit/Create'...");
+				
+				//select checkbox with text [Project name][Project key]
+				//id of check box is: source_application_source_selection_ids_[Project Key]
+				CheckBoxById("source_application_source_selection_ids_"+ projectKey);
+				System.out.println("Checking "+ nameOfJiraProject + " " + projectKey + "...");
+				
+				//uncheck element with id: "source_application_import_sample_reports"
+				UncheckBoxById("source_application_import_sample_reports");
+				System.out.println("Unchecking import sample reports...");
+				
+				//check id="source_application_extra_options_import_status_transitions" name="source_application[extra_options][import_status_transitions]"
+				CheckBoxById("source_application_extra_options_import_status_transitions");
+				System.out.println("Checking import status transitions...");
+				
+				//check id="source_application_extra_options_import_remaining_estimated_hours_change" name="source_application[extra_options][import_remaining_estimated_hours_change]"
+				CheckBoxById("source_application_extra_options_import_remaining_estimated_hours_change");
+				System.out.println("Checking extra options import estimated hours change...");
+				
+				//check id="source_application_extra_options_import_interval_dimensions" name="source_application[extra_options][import_interval_dimensions]"
+				CheckBoxById("source_application_extra_options_import_interval_dimensions");
+				System.out.println("Checking extra options import interval dimensions...");
+				
+				//check id="source_application_extra_options_user_group_dimensions_reporter_group" id="source_application_extra_options_user_group_dimensions_reporter_group"
+				//check id="source_application_extra_options_user_group_dimensions_reporter_group" name="source_application[extra_options][user_group_dimensions][]"
+				//are these two duplicates?
+				CheckBoxById("source_application_extra_options_user_group_dimensions_reporter_group");
+				System.out.println("Checking extra options user group dimensions reporter group...");
+				
+				//check id="source_application_extra_options_user_group_dimensions_assignee_group" name="source_application[extra_options][user_group_dimensions][]"
+				CheckBoxById("source_application_extra_options_user_group_dimensions_assignee_group");
+				System.out.println("Checking extra options user group dimensions assignee group...");
+				
+				//check id="source_application_extra_options_user_group_dimensions_logged_by_group" name="source_application[extra_options][user_group_dimensions][]"
+				CheckBoxById("source_application_extra_options_user_group_dimensions_logged_by_group");
+				System.out.println("Checking extra options user group dimensions logged by group...");
 			
-			//enter account name
-			WebElement accountField = FindElementById("account_name");
-			accountField.sendKeys(accountName);
-			
-			//enter account description
-			WebElement descriptionField = FindElementById("account_description");
-			descriptionField.sendKeys(accountDescription);
-			
-			//click submit
-			//need more info, more than attribute name = commit, need to know what kind of HTML tag it is in
-			//maybe an enter event is good enough?
-			
-			//after page reload, grab the URL from this page, parse the id out of it, store it
-			String id = GetIdFromUrl();
-			
-			//click Add new source application
-			WebElement newSourceUrl = FindElementByLinkText("Add new source application");
-			newSourceUrl.click();
-			WaitForPageToLoad();
-			
-			//click the image with Jira in it
-			//hopefully that can find it, is that space going to cause a problem?
-			WebElement jiraImg = FindElementByCssSelector("img", "alt", "jira_local application");
-			jiraImg.click();
-			WaitForPageToLoad();
-			
-			//click submit/create
-			//chose this way bc it seems unique to this element
-			WebElement submitButton = FindElementByCssSelector("input", "data-disable-with", "Creating...");
-			submitButton.click();
-			
-			//select checkbox with text [Project name][Project key]
-			//id of check box is: source_application_source_selection_ids_[Project Key]
-			CheckBoxById("source_application_source_selection_ids_"+ projectKey);
-			
-			//uncheck element with id: "source_application_import_sample_reports"
-			UncheckBoxById("source_application_import_sample_reports");
-			
-			//check id="source_application_extra_options_import_status_transitions" name="source_application[extra_options][import_status_transitions]"
-			CheckBoxById("source_application_extra_options_import_status_transitions");
-			
-			//check id="source_application_extra_options_import_remaining_estimated_hours_change" name="source_application[extra_options][import_remaining_estimated_hours_change]"
-			CheckBoxById("source_application_extra_options_import_remaining_estimated_hours_change");
-			
-			//check id="source_application_extra_options_import_interval_dimensions" name="source_application[extra_options][import_interval_dimensions]"
-			CheckBoxById("source_application_extra_options_import_interval_dimensions");
-
-			//check id="source_application_extra_options_user_group_dimensions_reporter_group" id="source_application_extra_options_user_group_dimensions_reporter_group"
-			//check id="source_application_extra_options_user_group_dimensions_reporter_group" name="source_application[extra_options][user_group_dimensions][]"
-			//are these two duplicates?
-			CheckBoxById("source_application_extra_options_user_group_dimensions_reporter_group");
-			
-			//check id="source_application_extra_options_user_group_dimensions_assignee_group" name="source_application[extra_options][user_group_dimensions][]"
-			CheckBoxById("source_application_extra_options_user_group_dimensions_assignee_group");
-		
-			//check id="source_application_extra_options_user_group_dimensions_logged_by_group" name="source_application[extra_options][user_group_dimensions][]"
-			CheckBoxById("source_application_extra_options_user_group_dimensions_logged_by_group");
-		
-			//check id="source_application_extra_options_user_group_dimensions_transition_author_group" name="source_application[extra_options][user_group_dimensions][]"
-			CheckBoxById("source_application_extra_options_user_group_dimensions_transition_author_group");
-			
-			//click Show available custom fields
-			//is this unique enough to find the right thing?
-			WebElement customFields = FindElementByLinkText("Show available custom fields");
-			customFields.click();
-			
-			//manual wait for page load
-			WaitForPageToLoad();
-			
-			
-			//click 88 stuffs in check-boxes 
-			//Die();
+				//check id="source_application_extra_options_user_group_dimensions_transition_author_group" name="source_application[extra_options][user_group_dimensions][]"
+				CheckBoxById("source_application_extra_options_user_group_dimensions_transition_author_group");
+				System.out.println("Checking extra options user group dimensions transition author group...");
+				
+				//click Show available custom fields
+				//is this unique enough to find the right thing?
+				WebElement customFields = FindElementByLinkText("Show available custom fields");
+				customFields.click();
+				System.out.println("Clicking 'Show available custom fields...");
+				
+				//manual wait for page load
+				WaitForPageToLoad();
+				
+				
+				//click 88 stuffs in check-boxes 
+				//Die();
+			}
+			else {
+				System.out.println("\n**Something went wrong with logging in or data collection for the project. \n**See screenshot.");
+				//Teardown();
+			}
+		} 
+		//attempt to debug as best we can with these common exceptions
+		//no teardowns in these so that we can view the page when it is done
+		//have to manually close the browser
+		catch (NoSuchElementException e) {
+			e.printStackTrace();
+			TakeScreenshot("NoSuchElementException.jpg");
 		}
-		else {
-			System.out.println("\n**Something went wrong with logging in. See screenshot.");
-			Teardown();
+		catch(StaleElementReferenceException e) {
+			e.printStackTrace();
+			TakeScreenshot("StaleElementReferenceException.jpg");
 		}
+		catch(TimeoutException e) {
+			e.printStackTrace();
+			TakeScreenshot("TimeoutException.jpg");
+		}
+		catch(ElementNotVisibleException e) {
+			e.printStackTrace();
+			TakeScreenshot("ElementNotVisibleException.jpg");
+		}
+		catch(ElementNotSelectableException e) {
+			e.printStackTrace();
+			TakeScreenshot("ElementNotSelectableException.jpg");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			TakeScreenshot("Exception.jpg");
+		}
+		
 	}
 	
 	//Check a check box if not already checked
