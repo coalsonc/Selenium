@@ -104,7 +104,6 @@ public class AccountCreation {
 
 	//so you want to take a screenshot, huh?
 	//well tell me the filePath with the name and type for the file
-	
 	public void TakeScreenshot(String filePath) {
 		//screenshot code should be something like below for reuse
 		File pic = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -217,9 +216,11 @@ public class AccountCreation {
 			//click Show available custom fields
 			//is this unique enough to find the right thing?
 			WebElement customFields = FindElementByLinkText("Show available custom fields");
+			customFields.click();
+			
 			//manual wait for page load
 			WaitForPageToLoad();
-			customFields.click();
+			
 			
 			//click 88 stuffs in check-boxes 
 			//Die();
@@ -359,6 +360,8 @@ public class AccountCreation {
 	
 	//does the type of reader here matter, special chars from other countries?
 	//thank you - https://www.caveofprogramming.com/java/java-file-reading-and-writing-files-in-java.html
+	//also this might be a csv, can change logic a bit assuming the first row is a data id row
+	//like Account Name, blah blah, skip that line, throw in a continue for i = 0
 	public List<String> ReadFromFile(String filePath) {
 		
 		List<String> data = new ArrayList<String>();
