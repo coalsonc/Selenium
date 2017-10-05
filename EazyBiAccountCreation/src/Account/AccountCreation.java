@@ -98,17 +98,26 @@ public class AccountCreation {
 		//return whether it was successful or not
 		
 		
+		TakeScreenshot("login.jpg");
+		return true;
+	}
+
+	//so you want to take a screenshot, eh?
+	//well tell me the filePath with the name and type for the file
+	
+	public void TakeScreenshot(String filePath) {
 		//screenshot code should be something like below for reuse
 		File pic = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 		try {
-			FileUtils.copyFile(pic, new File("where ever to store it"));
+			FileUtils.copyFile(pic, new File(filePath));
 		} catch (IOException e) {
 			System.out.println("\n**Something went wrong saving the login screenshot.");
 			e.printStackTrace();
 		}
-		return true;
 	}
 	
+	//read the project data from a file and set the class fields above for
+	//reuse through this process
 	public boolean CollectProjectData(String projectDataFilePath) {
 		//return in order read from file?
 		List<String> projectData = ReadFromFile(projectDataFilePath);
@@ -131,6 +140,8 @@ public class AccountCreation {
 		}
 		
 	}
+	
+	//do the thing
 	@Test
 	public void StartAccountCreation() {
 		//yeah, reading these from the keyboard is a temporary solution, calm down
@@ -223,10 +234,10 @@ public class AccountCreation {
 			
 			//click Show available custom fields
 			//is this unique enough to find the right thing?
-			WebElement customFields = FindElementByClass("action_show_custom_fields");
-			
+			WebElement customFields = FindElementByLinkText("Show available custom fields");
 			//manual wait for page load
 			WaitForPageToLoad();
+			customFields.click();
 			
 			//click 88 stuffs in checkboxes 
 			//Die();
@@ -274,6 +285,7 @@ public class AccountCreation {
 		return element;
 	}
 	
+	//find the element by the displayed text of the link
 	public WebElement FindElementByLinkText(String text) {
 		WebElement element = null;
 		
