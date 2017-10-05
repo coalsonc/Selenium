@@ -68,85 +68,6 @@ public class AccountCreation {
 	//       (5) project type
 	// read from file? read from somewhere?
 	
-	public void Setup() {
-		System.setProperty("webdriver.chrome.driver","C:/chromedriver_win32/chromedriver.exe");
-		driver = new ChromeDriver(); 
-		
-		//point to EazyBi starting location
-		baseUrl = "LOL";
-		driver.get(baseUrl);
-		driver.manage().window().maximize();
-	}
-	
-	//hopefully this will work to switch over to headless
-	//without changing all the commands/methods
-	//no having to have Chrome or some browser in some place
-	
-	public void SetupHeadless() {
-		driver = new HtmlUnitDriver();
-		baseUrl = "LOL";
-		
-		driver.get(baseUrl);
-		driver.manage().window().maximize();
-	}
-	
-	//quit when finished
-	public void Teardown() {
-		driver.quit();
-	}
-	
-	//maybe?
-	public boolean Login(String credentialFilePath) {
-		List<String> credentials = ReadFromFile(credentialFilePath);
-		//click, type user-name and password, etc
-		//take a screenshot of this if not successful
-		//return whether it was successful or not
-		
-		//login logic
-		//enter values
-		TakeScreenshot("login.jpg");
-		
-		//click button
-		return true;
-	}
-
-	//so you want to take a screenshot, huh?
-	//well tell me the filePath with the name and type for the file
-	public void TakeScreenshot(String filePath) {
-		//screenshot code should be something like below for reuse
-		File pic = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-		try {
-			FileUtils.copyFile(pic, new File(filePath));
-		} catch (IOException e) {
-			System.out.println("\n**Something went wrong saving the login screenshot.");
-			e.printStackTrace();
-		}
-	}
-	
-	//read the project data from a file and set the class fields above for
-	//reuse through this process
-	public boolean CollectProjectData(String projectDataFilePath) {
-		//return in order read from file?
-		List<String> projectData = ReadFromFile(projectDataFilePath);
-		
-		//yeah, I realize this is kind of rough on the ordering
-		//maybe there's a better way to do this?
-		try {
-			accountName = projectData.toArray()[0].toString();
-			nameOfJiraProject = projectData.toArray()[1].toString();
-			projectKey = projectData.toArray()[2].toString();
-			accountDescription = projectData.toArray()[3].toString();
-			projectType = projectData.toArray()[4].toString();
-			return true;
-		}
-		catch(Exception e){
-			
-			System.out.println("\n**Something wrong with the project data read from the file.");
-			System.out.println(e.getMessage());
-			return false;
-		}
-		
-	}
 	
 	//do the thing
 	@Test
@@ -246,7 +167,7 @@ public class AccountCreation {
 				//is this unique enough to find the right thing?
 				WebElement customFields = FindElementByLinkText("Show available custom fields");
 				customFields.click();
-				System.out.println("Clicking 'Show available custom fields...");
+				System.out.println("Clicking 'Show available custom fields'...");
 				
 				//manual wait for page load
 				WaitForPageToLoad();
@@ -286,6 +207,85 @@ public class AccountCreation {
 		catch(Exception e) {
 			e.printStackTrace();
 			TakeScreenshot("Exception.jpg");
+		}
+		
+	}
+	public void Setup() {
+		System.setProperty("webdriver.chrome.driver","C:/chromedriver_win32/chromedriver.exe");
+		driver = new ChromeDriver(); 
+		
+		//point to EazyBi starting location
+		baseUrl = "LOL";
+		driver.get(baseUrl);
+		driver.manage().window().maximize();
+	}
+	
+	//hopefully this will work to switch over to headless
+	//without changing all the commands/methods
+	//no having to have Chrome or some browser in some place
+	
+	public void SetupHeadless() {
+		driver = new HtmlUnitDriver();
+		baseUrl = "LOL";
+		
+		driver.get(baseUrl);
+		driver.manage().window().maximize();
+	}
+	
+	//quit when finished
+	public void Teardown() {
+		driver.quit();
+	}
+	
+	//maybe?
+	public boolean Login(String credentialFilePath) {
+		List<String> credentials = ReadFromFile(credentialFilePath);
+		//click, type user-name and password, etc
+		//take a screenshot of this if not successful
+		//return whether it was successful or not
+		
+		//login logic
+		//enter values
+		TakeScreenshot("login.jpg");
+		
+		//click button
+		return true;
+	}
+
+	//so you want to take a screenshot, huh?
+	//well tell me the filePath with the name and type for the file
+	public void TakeScreenshot(String filePath) {
+		//screenshot code should be something like below for reuse
+		File pic = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+		try {
+			FileUtils.copyFile(pic, new File(filePath));
+		} catch (IOException e) {
+			System.out.println("\n**Something went wrong saving the login screenshot.");
+			e.printStackTrace();
+		}
+	}
+	
+	//read the project data from a file and set the class fields above for
+	//reuse through this process
+	public boolean CollectProjectData(String projectDataFilePath) {
+		//return in order read from file?
+		List<String> projectData = ReadFromFile(projectDataFilePath);
+		
+		//yeah, I realize this is kind of rough on the ordering
+		//maybe there's a better way to do this?
+		try {
+			accountName = projectData.toArray()[0].toString();
+			nameOfJiraProject = projectData.toArray()[1].toString();
+			projectKey = projectData.toArray()[2].toString();
+			accountDescription = projectData.toArray()[3].toString();
+			projectType = projectData.toArray()[4].toString();
+			return true;
+		}
+		catch(Exception e){
+			
+			System.out.println("\n**Something wrong with the project data read from the file.");
+			System.out.println(e.getMessage());
+			return false;
 		}
 		
 	}
