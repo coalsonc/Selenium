@@ -1,5 +1,8 @@
 package Account;
 
+//how to run task outside of eclipse
+//http://doc.alertsite.com/synthetic/monitors/selenium/create-runnable-jar-from-selenium-script-using-eclipse.htm
+//export runnable jar, include package required libraries into generated jar
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,10 +24,10 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-
 
 public class AccountCreation {
 	
@@ -66,6 +69,18 @@ public class AccountCreation {
 		
 		//point to EazyBi starting location
 		baseUrl = "LOL";
+		driver.get(baseUrl);
+		driver.manage().window().maximize();
+	}
+	
+	//hopefully this will work to switch over to headless
+	//without changing all the commands/methods
+	//no having to have chrome or some browser in some place
+	
+	public void SetupHeadless() {
+		driver = new HtmlUnitDriver();
+		baseUrl = "LOL";
+		
 		driver.get(baseUrl);
 		driver.manage().window().maximize();
 	}
@@ -148,7 +163,9 @@ public class AccountCreation {
 			//may have to do a little extra if it returns the wrong link
 			//if this is on the same page as clicking submit/create, this is not unique
 			//may find it if it is the first link with these two classes though?
-			WebElement newSourceUrl = FindElementByMultipleClasses("a", "aui-button aui-button-primary");
+			
+			//WebElement newSourceUrl = FindElementByMultipleClasses("a", "aui-button aui-button-primary");
+			WebElement newSourceUrl = FindElementByLinkText("Add new source application");
 			newSourceUrl.click();
 			WaitForPageToLoad();
 			
@@ -251,7 +268,17 @@ public class AccountCreation {
 	public WebElement FindElementById(String id) {
 		WebElement element = null;
 		
-		element = driver.findElement(By.id(id));
+		WebDriverWait wait = new WebDriverWait(driver, 100);
+		element = wait.until(ExpectedConditions.elementToBeClickable(By.id(id)));
+		
+		return element;
+	}
+	
+	public WebElement FindElementByLinkText(String text) {
+		WebElement element = null;
+		
+		WebDriverWait wait = new WebDriverWait(driver, 100);
+		element = wait.until(ExpectedConditions.elementToBeClickable(By.linkText(text)));
 		
 		return element;
 	}
@@ -269,7 +296,8 @@ public class AccountCreation {
 	public WebElement FindElementByClass(String className) {
 		WebElement element = null;
 		
-		element = driver.findElement(By.className(className));
+		WebDriverWait wait = new WebDriverWait(driver, 100);
+		element = wait.until(ExpectedConditions.elementToBeClickable(By.className(className)));
 		
 		return element;
 	}
@@ -283,7 +311,8 @@ public class AccountCreation {
 		//so this assumes that the classes are already seperated by spaces only
 		String cssSelector = htmlTag + "[class='" + classes + "']";
 		
-		element = driver.findElement(By.cssSelector(cssSelector));
+		WebDriverWait wait = new WebDriverWait(driver, 100);
+		element = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(cssSelector)));
 		
 		return element;
 	}
@@ -295,8 +324,8 @@ public class AccountCreation {
 		
 		String cssSelector = htmlTag + "[" + attribute + "='" + value + "']";
 		
-		element = driver.findElement(By.cssSelector(cssSelector));
-		
+		WebDriverWait wait = new WebDriverWait(driver, 100);
+		element = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(cssSelector)));
 		return element;
 	}
 	
